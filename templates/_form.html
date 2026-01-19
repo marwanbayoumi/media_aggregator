@@ -1,0 +1,75 @@
+<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+	<div class="rounded-lg shadow-lg w-full max-w-md p-6">
+		<h2 class="text-xl font-semibold mb-4">
+			{{ "Edit Album" if album else "Add Album" }}
+		</h2>
+
+		<form
+			hx-post="{{ action }}"
+			hx-target="{{ '#album-' ~ album.id if album else '#albums' }}"
+			hx-swap="{{ 'outerHTML' if album else 'beforeend' }}"
+			hx-on="htmx:beforeRequest: this.closest('.modal, .fixed')?.remove()"
+		>
+			<div>
+				<label class="block text-sm font-medium">Artist</label>
+				<input
+					name="artist"
+					value="{{ album.artist if album }}"
+					class="w-full border rounded px-3 py-2"
+				/>
+			</div>
+
+			<div>
+				<label class="block text-sm font-medium">Title</label>
+				<input
+					name="title"
+					value="{{ album.title if album }}"
+					class="w-full border rounded px-3 py-2"
+				/>
+			</div>
+
+			<div>
+				<label class="block text-sm font-medium">Year</label>
+				<input
+					name="year"
+					value="{{ album.year if album }}"
+					class="w-full border rounded px-3 py-2"
+				/>
+			</div>
+
+			<div>
+				<label class="block text-sm font-medium">Cover URL</label>
+				<input
+					name="cover"
+					value="{{ album.cover if album }}"
+					class="w-full border rounded px-3 py-2"
+				/>
+			</div>
+
+			<div>
+				<label class="block text-sm font-medium">Rating</label>
+				<input
+					name="rating"
+					value="{{ album.rating if album }}"
+					class="w-full border rounded px-3 py-2"
+				/>
+			</div>
+
+			<div class="flex justify-end space-x-2 pt-4">
+				<button
+					type="button"
+					class="px-4 py-2 rounded border"
+					onclick="this.closest('.fixed').remove()"
+				>
+					Cancel
+				</button>
+				<button
+					type="submit"
+					class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+				>
+					Save
+				</button>
+			</div>
+		</form>
+	</div>
+</div>

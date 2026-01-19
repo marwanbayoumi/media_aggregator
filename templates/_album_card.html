@@ -1,0 +1,96 @@
+<!-- Override browser rounded progress -->
+<style>
+	progress::-webkit-progress-value {
+		border-radius: 0 !important;
+	}
+	progress::-moz-progress-bar {
+		border-radius: 0 !important;
+	}
+</style>
+
+<div
+	id="album-{{ album.id }}"
+	class="card-sm bg-base-100 w-auto hover:shadow-xl rounded-none"
+>
+	{% if album.cover %}
+	<figure class="relative w-auto overflow-hidden group">
+		<img
+			src="{{ album.cover }}"
+			alt="{{ album.title }}"
+			class="w-full object-contain"
+		/>
+		<!-- Overlay buttons -->
+		<div
+			class="absolute inset-0 z-10 flex justify-end items-start backdrop-blur-sm bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity space-x-6"
+		>
+			<label class="btn btn-circle swap swap-rotate ">
+				<!-- this hidden checkbox controls the state -->
+				<input type="checkbox" />
+
+				<!-- hamburger icon -->
+				<svg
+					class="swap-off fill-current"
+					xmlns="http://www.w3.org/2000/svg"
+					width="32"
+					height="32"
+					viewBox="0 0 512 512"
+				>
+					<path
+						d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z"
+					/>
+				</svg>
+
+				<!-- close icon -->
+				<svg
+					class="swap-on fill-current"
+					xmlns="http://www.w3.org/2000/svg"
+					width="32"
+					height="32"
+					viewBox="0 0 512 512"
+				>
+					<polygon
+						points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49"
+					/>
+				</svg>
+			</label>
+			<!-- <button
+				class="btn-squre btn-lg text-2xl"
+				hx-get="/form/{{album.id}}"
+				hx-target="#modal"
+			>
+				✏️
+			</button>
+			<button
+				class="btn-squre btn-lg text-2xl"
+				hx-delete="/delete/{{album.id}}"
+				hx-target=""
+			>
+				🚮
+			</button> -->
+		</div>
+	</figure>
+
+	{% endif %}
+
+	<div class="card-body">
+		<h2 class="card-title">{{ album.title }}</h2>
+
+		<p class="text-sm opacity-70">{{ album.artist }}</p>
+
+		<div class="flex justify-between items-center mt-2">
+			<span>{{ album.year }}</span>
+
+			<span>
+				{{ album.rating }}
+				<progress
+					class="progress progress-success w-10 rounded-none"
+					value="{{ album.rating }}"
+					max="100"
+				></progress>
+			</span>
+			<!-- {% if album.rating | int > 70 %} -->
+			<!-- ⭐ -->
+			<!-- {% endif %} -->
+		</div>
+	</div>
+</div>
