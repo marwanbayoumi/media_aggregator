@@ -44,17 +44,19 @@
 	{% endif %}
 
 	<div class="card-body">
-		<h2 class="card-title">{{ album.title }}</h2>
+		<h2 class="card-title">{{ album.artist }}</h2>
 
-		<p class="text-sm opacity-70">{{ album.artist }}</p>
+		<p class="text-sm">{{ album.title }}</p>
 
-		<div class="flex justify-between items-center mt-2">
+		<div class="flex justify-between items-center mt-1">
 			<span>{{ album.year }}</span>
 
 			<span>
-				{{ album.rating }}
+				{% set progress_class = 'progress-success' if album.rating >= 75 else
+				'progress-warning' if album.rating >= 50 else 'progress-error' %} {{
+				album.rating }}
 				<progress
-					class="progress progress-success w-10 rounded-none"
+					class="progress {{progress_class}} w-10 rounded-none"
 					value="{{ album.rating }}"
 					max="100"
 				></progress>
