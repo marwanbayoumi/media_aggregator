@@ -1,5 +1,5 @@
 {% extends "base.html" %} {% block content %}
-<div id="albums" hx-get="/albums" hx-trigger="load"></div>
+<div hx-get="/albums" hx-trigger="load"></div>
 <div class="fab">
 	<button class="btn btn-lg btn-circle"
 		hx-get="/form"

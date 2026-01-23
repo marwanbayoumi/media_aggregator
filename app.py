@@ -1,26 +1,34 @@
 from flask import Flask, render_template, request, redirect, send_from_directory, url_for
+import sqlite3
 import csv
 import os
 
 app = Flask(__name__)
 CSV_FILE = "albums.csv"
 FIELDNAMES = ["id", "artist", "title", "year", "cover", "rating"]
+DB_FILE = "albums.db"
 
 
-def read_albums():
-    albums = []
-    if os.path.exists(CSV_FILE):
-        with open(CSV_FILE, newline="", encoding="utf-8") as f:
-            reader = csv.DictReader(f)
-            albums = list(reader)
-    return albums
+def get_db():
+    conn = sqlite3.connect(DB_FILE)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 
-def write_albums(albums):
-    with open(CSV_FILE, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
-        writer.writeheader()
-        writer.writerows(albums)
+# def read_albums():
+#     albums = []
+#     if os.path.exists(CSV_FILE):
+#         with open(CSV_FILE, newline="", encoding="utf-8") as f:
+#             reader = csv.DictReader(f)
+#             albums = list(reader)
+#     return albums
+
+
+# def write_albums(albums):
+#     with open(CSV_FILE, "w", newline="", encoding="utf-8") as f:
+#         writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
+#         writer.writeheader()
+#         writer.writerows(albums)
 
 
 def next_id(albums):
@@ -39,10 +47,12 @@ def favicon():
 def index():
     return render_template("index.html")
 
-
 @app.route("/albums")
-def albums():
-    return render_template("_albums.html", albums=read_albums())
+def getAlbums():
+    conn = get_db()
+    albums = conn.execute("SELECT * FROM albums ORDER BY year DESC").fetchall()
+    conn.close()
+    return render_template("_albums.html", albums=albums)
 
 
 @app.route("/form")
@@ -50,49 +60,73 @@ def create_form():
     return render_template("_form.html", album=None, action="/create")
 
 
-@app.route("/form/<id>")
+@app.route("/form/<int:id>")
 def edit_form(id):
-    albums = read_albums()
-    album = next(a for a in albums if a["id"] == id)
+    conn = get_db()
+    album = conn.execute(
+        "SELECT * FROM albums WHERE id = ?",
+        (id,)
+    ).fetchone()
+    conn.close()
     return render_template("_form.html", album=album, action=f"/edit/{id}")
 
 
 @app.route("/create", methods=["POST"])
 def create():
-    albums = read_albums()
-    album = {
-        "id": next_id(albums),
-        "artist": request.form["artist"],
-        "title": request.form["title"],
-        "year": request.form["year"],
-        "cover": request.form["cover"],
-        "rating": request.form["rating"],
-    }
-    albums.append(album)
-    write_albums(albums)
-    return render_template("_albums_card.html", albums=albums)
+    if request.method == "POST":
+        conn = get_db()
+        conn.execute(
+            "INSERT INTO albums (artist, title, year, cover, rating) VALUES (?, ?, ?, ?, ?)",
+            (
+                request.form["artist"],
+                request.form["title"],
+                request.form["year"],
+                request.form["cover"],
+                request.form["rating"],
+            ),
+        )
+        conn.commit()
+
+        album = conn.execute("SELECT * FROM albums ORDER BY id DESC LIMIT 1;").fetchone()
+    conn.close()
+
+    return render_template("_album_card.html", album=album)
 
 
 @app.route("/edit/<id>", methods=["POST"])
 def edit(id):
-    albums = read_albums()
-    album = next(a for a in albums if a["id"] == id)
+    conn = get_db()
 
-    for field in FIELDNAMES:
-        if field != "id":
-            album[field] = request.form[field]
+    if request.method == "POST":
+        conn.execute(
+            """UPDATE albums
+               SET artist=?, title=?, year=?, cover=?, rating=?
+               WHERE id=?""",
+            (
+                request.form["artist"],
+                request.form["title"],
+                request.form["year"],
+                request.form["cover"],
+                request.form["rating"],
+                id,
+            ),
+        )
+        conn.commit()
 
-    write_albums(albums)
-    return render_template("_album_card.html", albums=albums)
+    album = conn.execute("SELECT * FROM albums WHERE id=?", (id,)).fetchone()
+    conn.close()
+    return render_template("_album_card.html", album=album)
 
 
-@app.route("/delete/<id>", methods=["DELETE"])
+@app.route("/delete/<int:id>", methods=["DELETE"])
 def delete(id):
-    albums = read_albums()
-    albums = [a for a in albums if a["id"] != id]
-    write_albums(albums)
+    conn = get_db()
+    conn.execute("DELETE FROM albums WHERE id=?", (id,))
+    conn.commit()
+    albums = conn.execute("SELECT * FROM albums ORDER BY year DESC").fetchall()
+    conn.close()
     return render_template("_albums.html", albums=albums)
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True,host="0.0.0.0")
