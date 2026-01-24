@@ -14,6 +14,13 @@ def get_db():
     conn.row_factory = sqlite3.Row
     return conn
 
+def init_db():
+    conn = get_db()
+    with open('schema.sql', 'r') as f:
+        conn.executescript(f.read())
+    conn.commit()
+    conn.close()
+
 
 # def read_albums():
 #     albums = []
@@ -51,8 +58,22 @@ def index():
 def getAlbums():
     conn = get_db()
     albums = conn.execute("SELECT * FROM albums ORDER BY year DESC").fetchall()
+    songs = conn.execute("SELECT * FROM favorite_songs").fetchall()
     conn.close()
-    return render_template("_albums.html", albums=albums)
+    return render_template("_albums.html", albums=albums, songs=songs)
+
+@app.route("/favorite/<int:album_id>", methods=["POST"])
+def add_favorite(album_id):
+    conn = get_db()
+    song_title = request.form["song_title"]
+    conn.execute(
+        "INSERT INTO favorite_songs (album_id, song_title) VALUES (?, ?)",
+        (album_id, song_title),
+    )
+    conn.commit()
+    song = conn.execute("SELECT * FROM favorite_songs ORDER BY id DESC LIMIT 1;").fetchone()
+    conn.close()
+    return f"<li>{song['song_title']}</li>"
 
 
 @app.route("/form")
@@ -129,4 +150,5 @@ def delete(id):
 
 
 if __name__ == "__main__":
+    init_db()
     app.run(debug=True,host="0.0.0.0")
