@@ -1,13 +1,10 @@
 from flask import Flask, render_template, request, redirect, send_from_directory, url_for
 import sqlite3
-import csv
 import os
 
 app = Flask(__name__)
-CSV_FILE = "albums.csv"
 FIELDNAMES = ["id", "artist", "title", "year", "cover", "rating"]
 DB_FILE = "albums.db"
-
 
 def get_db():
     conn = sqlite3.connect(DB_FILE)
@@ -20,22 +17,6 @@ def init_db():
         conn.executescript(f.read())
     conn.commit()
     conn.close()
-
-
-# def read_albums():
-#     albums = []
-#     if os.path.exists(CSV_FILE):
-#         with open(CSV_FILE, newline="", encoding="utf-8") as f:
-#             reader = csv.DictReader(f)
-#             albums = list(reader)
-#     return albums
-
-
-# def write_albums(albums):
-#     with open(CSV_FILE, "w", newline="", encoding="utf-8") as f:
-#         writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
-#         writer.writeheader()
-#         writer.writerows(albums)
 
 
 def next_id(albums):

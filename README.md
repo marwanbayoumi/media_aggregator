@@ -14,7 +14,7 @@ A personal media aggregator web application for tracking and managing albums and
 ## Tech Stack
 
 - **Backend**: Flask (Python)
-- **Frontend**: HTMX, Tailwind CSS, DaisyUI
+- **Frontend**: HTMX, Tailwind CSS, DaisyUI, Alpine.js
 - **Database**: SQLite
 - **Containerization**: Docker
 
