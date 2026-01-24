@@ -13,6 +13,8 @@
 	class="card-sm bg-base-100 w-auto hover:shadow-xl rounded-none"
 	x-show="search.trim() === '' || '{{ album.title.lower() }}'.includes(search.toLowerCase()) || '{{ album.artist.lower() }}'.includes(search.toLowerCase()) || '{{ album.year }}'.toString().includes(search.toLowerCase())"
 	x-transition
+	hx-get="/album/{{album.id}}"
+	hx-target="#card-view"
 >
 	{% if album.cover %}
 	<figure class="relative w-auto overflow-hidden group">
@@ -22,7 +24,7 @@
 			class="w-full object-contain"
 		/>
 		<!-- Overlay buttons -->
-		<divF
+		<div
 			class="absolute inset-0 z-10 flex justify-end items-start backdrop-blur-sm bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity space-x-6"
 		>
 			<button
@@ -40,7 +42,7 @@
 			>
 				🚮
 			</button>
-		</divF>
+		</div>
 	</figure>
 
 	{% endif %}

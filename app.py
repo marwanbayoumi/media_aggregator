@@ -148,6 +148,14 @@ def delete(id):
     conn.close()
     return render_template("_albums.html", albums=albums)
 
+@app.route("/album/<int:id>", methods=["GET"])
+def albumView(id):
+    conn = get_db()
+    album = conn.execute("select * from albums where id=?", (id,)).fetchone()
+    songs = conn.execute("select * from favorite_songs where id=?", (id,)).fetchall()
+    
+    return render_template("album_view.html", album=album)
+
 
 if __name__ == "__main__":
     init_db()
