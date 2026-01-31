@@ -2,7 +2,7 @@ FROM python:3.11-slim
 
 COPY static/ templates/ app.py requirements.txt /app/
 
-RUN pip --no-cache-dir -r install /app/requirements.txt
+RUN pip --no-cache-dir install -r /app/requirements.txt
 
 RUN pip install gunicorn
 
