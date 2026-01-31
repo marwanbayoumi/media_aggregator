@@ -46,15 +46,15 @@ def getAlbums():
 @app.route("/favorite/<int:album_id>", methods=["POST"])
 def add_favorite(album_id):
     conn = get_db()
-    song_title = request.form["song_title"]
+    track_title = request.form["track_title"]
     conn.execute(
-        "INSERT INTO favorite_songs (album_id, song_title) VALUES (?, ?)",
-        (album_id, song_title),
+        "INSERT INTO favorite_songs (album_id, track_title) VALUES (?, ?)",
+        (album_id, track_title),
     )
     conn.commit()
     song = conn.execute("SELECT * FROM favorite_songs ORDER BY id DESC LIMIT 1;").fetchone()
     conn.close()
-    return f"<li>{song['song_title']}</li>"
+    return f"<li>{song['track_title']}</li>"
 
 
 @app.route("/form")
@@ -133,9 +133,8 @@ def delete(id):
 def albumView(id):
     conn = get_db()
     album = conn.execute("select * from albums where id=?", (id,)).fetchone()
-    songs = conn.execute("select * from favorite_songs where id=?", (id,)).fetchall()
-    
-    return render_template("album_view.html", album=album)
+    tracks = conn.execute("select * from favorite_songs where album_id=?", (id,)).fetchall()
+    return render_template("album_view.html", album=album, tracks=tracks)
 
 
 if __name__ == "__main__":
