@@ -1,12 +1,18 @@
 FROM python:3.12-slim
 
-RUN apt-get update && apt-get install -y --no-install-recommends \ sqlite3 \ libsqlite3-dev \ && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends \
+ 	sqlite3 \
+	libsqlite3-dev \
+	
+	&& rm -rf /var/lib/apt/lists/*
 
 COPY app/ /app/
 
 WORKDIR /app
 
 RUN pip --no-cache-dir install -r /app/requirements.txt
+
+RUN .read albums.db
 
 RUN pip install gunicorn
 
