@@ -11,12 +11,12 @@ def get_db():
     conn.row_factory = sqlite3.Row
     return conn
 
-def init_db():
-    conn = get_db()
-    with open('schema.sql', 'r') as f:
-        conn.executescript(f.read())
-    conn.commit()
-    conn.close()
+# def init_db():
+#     conn = get_db()
+#     with open('schema.sql', 'r') as f:
+#         conn.executescript(f.read())
+#     conn.commit()
+#     conn.close()
 
 
 def next_id(albums):
@@ -138,5 +138,4 @@ def albumView(id):
 
 
 if __name__ == "__main__":
-    init_db()
     app.run(debug=True,host="0.0.0.0")
