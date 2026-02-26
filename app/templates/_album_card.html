@@ -31,14 +31,16 @@
 				class="btn-squre btn-lg text-2xl"
 				hx-get="/form/{{album.id}}"
 				hx-target="#modal"
+				@click="($event).stopPropagation()"
 			>
 				✏️
 			</button>
 			<button
-				class="btn-squre btn-lg text-2xl"
+				class="btn-squre btn-lg text-2xljj"
 				hx-delete="/delete/{{album.id}}"
 				hx-swap="{{ 'outerHTML' if album else 'beforeend' }}"
 				hx-target="#album"
+				@click="($event).stopPropagation()"
 			>
 				🚮
 			</button>
