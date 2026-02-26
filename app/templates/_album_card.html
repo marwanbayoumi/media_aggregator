@@ -25,10 +25,10 @@
 		/>
 		<!-- Overlay buttons -->
 		<div
-			class="absolute inset-0 z-10 flex justify-center backdrop-blur-sm bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity space-x-6"
+			class="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-sm bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity space-x-6"
 		>
 			<button
-				class="btn-squre btn-lg text-2xl"
+				class="btn-square btn-lg "
 				hx-get="/form/{{album.id}}"
 				hx-target="#modal"
 				@click="($event).stopPropagation()"
@@ -36,7 +36,7 @@
 				✏️
 			</button>
 			<button
-				class="btn-squre btn-lg text-2xljj"
+				class="btn-square btn-lg"
 				hx-delete="/delete/{{album.id}}"
 				hx-swap="{{ 'outerHTML' if album else 'beforeend' }}"
 				hx-target="#album"
