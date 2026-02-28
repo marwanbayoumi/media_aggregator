@@ -8,13 +8,12 @@
 	}
 </style>
 
-<div
+<a
+	href="/album/{{album.id}}"
 	id="album-{{ album.id }}"
-	class="card-sm bg-base-100 w-auto hover:shadow-xl rounded-none"
+	class="card-sm bg-base-100 w-auto hover:shadow-xl rounded-none block transition-all"
 	x-show="search.trim() === '' || '{{ album.title.lower() }}'.includes(search.toLowerCase()) || '{{ album.artist.lower() }}'.includes(search.toLowerCase()) || '{{ album.year }}'.toString().includes(search.toLowerCase())"
 	x-transition
-	hx-get="/album/{{album.id}}"
-	hx-target="#card-view"
 >
 	{% if album.cover %}
 	<figure class="relative w-auto overflow-hidden group">
@@ -31,7 +30,7 @@
 				class="btn-square btn-lg "
 				hx-get="/form/{{album.id}}"
 				hx-target="#modal"
-				@click="($event).stopPropagation()"
+				@click.prevent.stop
 			>
 				✏️
 			</button>
@@ -40,7 +39,7 @@
 				hx-delete="/delete/{{album.id}}"
 				hx-swap="{{ 'outerHTML' if album else 'beforeend' }}"
 				hx-target="#album"
-				@click="($event).stopPropagation()"
+				@click.prevent.stop
 			>
 				🚮
 			</button>
@@ -67,9 +66,6 @@
 					max="100"
 				></progress>
 			</span>
-			<!-- {% if album.rating | int > 70 %} -->
-			<!-- ⭐ -->
-			<!-- {% endif %} -->
 		</div>
 	</div>
-</div>
+</a>

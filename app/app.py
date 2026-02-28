@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, send_from_directory, url_for
 import sqlite3
 import os
+from metadata import fetch_album_metadata
 
 app = Flask(__name__)
 FIELDNAMES = ["id", "artist", "title", "year", "cover", "rating"]
@@ -29,8 +30,22 @@ def index():
 
 @app.route("/albums")
 def getAlbums():
+    sort = request.args.get('sort', 'year_desc')
+    min_rating = request.args.get('min_rating', 0, type=int)
+    
+    order_clause = "year DESC"
+    if sort == 'year_asc':
+        order_clause = "year ASC"
+    elif sort == 'artist_asc':
+        order_clause = "artist ASC"
+    elif sort == 'title_asc':
+        order_clause = "title ASC"
+    elif sort == 'rating_desc':
+        order_clause = "rating DESC"
+
     conn = get_db()
-    albums = conn.execute("SELECT * FROM albums ORDER BY year DESC").fetchall()
+    query = "SELECT * FROM albums WHERE rating >= ? ORDER BY " + order_clause
+    albums = conn.execute(query, (min_rating,)).fetchall()
     songs = conn.execute("SELECT * FROM favorite_songs").fetchall()
     conn.close()
     return render_template("_albums.html", albums=albums, songs=songs)
@@ -82,7 +97,10 @@ def create():
         conn.commit()
 
         album = conn.execute("SELECT * FROM albums ORDER BY id DESC LIMIT 1;").fetchone()
-    conn.close()
+        conn.close()
+
+        # Fetch tracks and runtime metadata dynamically
+        fetch_album_metadata(album['id'], album['artist'], album['title'])
 
     return render_template("_album_card.html", album=album)
 
@@ -121,11 +139,24 @@ def delete(id):
     conn.close()
     return render_template("_albums.html", albums=albums)
 
+@app.route("/album/<int:id>/populate", methods=["POST"])
+def populate_metadata(id):
+    conn = get_db()
+    album = conn.execute("SELECT * FROM albums WHERE id = ?", (id,)).fetchone()
+    conn.close()
+    
+    if album:
+        fetch_album_metadata(id, album['artist'], album['title'])
+    
+    # Return a refresh trigger or just redirect back
+    return redirect(url_for('albumView', id=id))
+
 @app.route("/album/<int:id>", methods=["GET"])
 def albumView(id):
     conn = get_db()
     album = conn.execute("select * from albums where id=?", (id,)).fetchone()
-    tracks = conn.execute("select * from favorite_songs where album_id=?", (id,)).fetchall()
+    tracks = conn.execute("select * from favorite_songs where album_id=? ORDER BY id", (id,)).fetchall()
+    conn.close()
     return render_template("album_view.html", album=album, tracks=tracks)
 
 

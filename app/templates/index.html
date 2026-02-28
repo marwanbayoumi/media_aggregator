@@ -1,5 +1,5 @@
 {% extends "base.html" %} {% block content %}
-<div hx-get="/albums" hx-trigger="load"></div>
+<div id="album-grid" hx-get="/albums" hx-trigger="load"></div>
 <div class="fab">
 	<button class="btn btn-lg btn-circle"
 		hx-get="/form"
@@ -9,6 +9,5 @@
 </div>
 
 <div id="modal"></div>
-<div id="card-view"></div>
 {% endblock %}
 
